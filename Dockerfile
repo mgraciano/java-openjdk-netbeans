@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.2.9
+FROM adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.2.9-slim
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
