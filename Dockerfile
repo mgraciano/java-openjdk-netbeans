@@ -1,14 +1,18 @@
-FROM anapsix/alpine-java:jdk8
+FROM adoptopenjdk/openjdk11:x86_64-ubuntu-jdk-11.0.2.9
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+        libxrender1 \
+        libxtst6 \
+        libxi6 \
+        libfontconfig1 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV HOME /home/netbeans
 
-RUN adduser -D netbeans && \
-    apk update && \
-    apk add libxext libxtst libxrender && \
-    rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/*
-
-RUN mkdir -m 700 /data && \
+RUN adduser --disabled-password --gecos '' netbeans && \
+    mkdir -m 700 /data && \
     mkdir -m 700 $HOME/.netbeans && \
     mkdir -m 700 $HOME/NetBeansProjects && \
     chown -R netbeans:netbeans /data $HOME/.netbeans $HOME/NetBeansProjects
@@ -22,22 +26,6 @@ USER netbeans
 
 ADD incubating-netbeans-10.0-bin.tar.xz /home/netbeans
 
-USER root 
-
-ARG MAVEN_VERSION=3.5.4
-ARG SHA=ce50b1c91364cb77efe3776f756a6d92b76d9038b0a0782f7d53acf1e997a14d
-ARG BASE_URL=http://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
-
-RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
-    && wget ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/apache-maven.tar.gz -q \
-    && echo "${SHA}  /tmp/apache-maven.tar.gz" | sha256sum -c - \  
-    && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven \
-    && rm -f /tmp/apache-maven.tar.gz \
-    && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
-
-ENV MAVEN_HOME /usr/share/maven
-ENV MAVEN_CONFIG $HOME/.m2
-
-USER netbeans
+COPY netbeans.conf /home/netbeans/netbeans/etc
 
 CMD ~/netbeans/bin/netbeans
