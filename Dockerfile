@@ -20,9 +20,7 @@ VOLUME ~/NetBeansProjects
 
 USER netbeans
 
-RUN wget http://download.netbeans.org/netbeans/8.2/final/zip/netbeans-8.2-201609300101-javaee.zip -O ~/netbeans.zip -q && \
-    unzip ~/netbeans.zip -q -d ~ && \
-    rm ~/netbeans.zip
+ADD incubating-netbeans-10.0-bin.tar.xz /home/netbeans
 
 USER root 
 
